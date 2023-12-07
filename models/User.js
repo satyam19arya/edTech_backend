@@ -42,6 +42,8 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
     courseProgress: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "CourseProgress"

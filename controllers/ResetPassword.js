@@ -6,6 +6,14 @@ const mailSender = require('../utils/mailSender');
 const resetPasswordToken = async (req, res) => {
     try{
         const {email} = req.body;
+
+        if(!email){
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide all the required fields'
+            })
+        }
+        
         const user = await User.findOne({email});
         if(!user){
             return res.status(404).json({
@@ -37,6 +45,7 @@ const resetPasswordToken = async (req, res) => {
         })
 
     } catch(err){
+        console.log(err);
         return res.status(500).json({
             success: false,
             message: 'Something went wrong',
@@ -48,6 +57,14 @@ const resetPasswordToken = async (req, res) => {
 const resetPassword = async (req, res) => {
     try{
         const {password, confirmPassword, resetPasswordToken} = req.body;
+
+        if(!password || !confirmPassword){
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide all the required fields'
+            })
+        }
+
         if(password !== confirmPassword){
             return res.status(400).json({
                 success: false,
@@ -83,6 +100,7 @@ const resetPassword = async (req, res) => {
         })
 
     } catch(err){
+        console.log(err);
         return res.status(500).json({
             success: false,
             message: 'Something went wrong',

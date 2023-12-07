@@ -4,7 +4,10 @@ const User = require('../models/User');
 exports.auth = async (req, res, next) => {
     console.log("I am inside midleware");
     if(!req.headers || !req.headers.authorization || !req.headers.authorization.startsWith("Bearer")){
-        return res.send(error(401, 'Authorization header is required'));
+        return res.status(401).json({
+            success: false,
+            message: 'Authorization header is required'
+        })
     }
 
     const accessToken = req.headers.authorization.split(" ")[1];
@@ -21,9 +24,11 @@ exports.auth = async (req, res, next) => {
         req.user = user;
         next();
     } catch(err){
+        console.log(err);
         return res.status(401).json({
             success: false,
-            message: 'Something went wrong'
+            message: 'Token verification failed',
+            error: err.message
         })
     }
 }
@@ -39,9 +44,11 @@ exports.isStudent = async (req, res, next) => {
             })
         }
     } catch(err){
+        console.log(err);
         return res.status(500).json({
             success: false,
-            message: 'Something went wrong'
+            message: 'Something went wrong',
+            error: err.message
         })
     }
 }
@@ -57,9 +64,11 @@ exports.isInstructor = async (req, res, next) => {
             })
         }
     } catch(err){
+        console.log(err);
         return res.status(500).json({
             success: false,
-            message: 'Something went wrong'
+            message: 'Something went wrong',
+            error: err.message
         })
     }
 }
@@ -75,9 +84,11 @@ exports.isAdmin = async (req, res, next) => {
             })
         }
     } catch(err){
+        console.log(err);
         return res.status(500).json({
             success: false,
-            message: 'Something went wrong'
+            message: 'Something went wrong',
+            error: err.message
         })
     }
 }

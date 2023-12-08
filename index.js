@@ -5,7 +5,6 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const cloudinary = require('cloudinary').v2;
-const Razorpay = require('razorpay');
 const fileupload = require('express-fileupload');
 dotenv.config('./.env');
 const app = express();
@@ -14,11 +13,6 @@ cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
     api_key: process.env.CLOUDINARY_API_KEY, 
     api_secret: process.env.CLOUDINARY_API_SECRET
-});
-
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY,
-    key_secret: process.env.RAZORPAY_SECRET
 });
 
 app.use(express.json({ limit: "5mb" }));

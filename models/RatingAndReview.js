@@ -20,10 +20,6 @@ const ratingAndReview = mongoose.Schema({
         required: true,
         index: true
     },
-    date: {
-        type: Date,
-        default: Date.now()
-    }
 });
 
 module.exports = mongoose.model('RatingandReview', ratingAndReview);

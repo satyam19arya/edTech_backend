@@ -22,12 +22,19 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        minLength: 6
     },
     accountType: {
         type: String,
         enum: ['Admin', 'Student', 'Instructor'],
         required: true
+    },
+    active: {
+        type: Boolean,
+        default: true
+    },
+    approved: {
+        type: Boolean,
+        default: true
     },
     additionalDetails: {
         type: mongoose.Schema.Types.ObjectId,

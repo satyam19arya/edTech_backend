@@ -2,12 +2,10 @@ const mongoose = require('mongoose');
 
 const courseSchema = mongoose.Schema({
     courseName: {
-        type: String,
-        trim: true
+        type: String
     },
     courseDescription: {
-        type: String,
-        trim: true
+        type: String
     },
     instructor: {
         type: mongoose.Schema.Types.ObjectId,
@@ -15,8 +13,7 @@ const courseSchema = mongoose.Schema({
         required: true  
     },
     whatYouWillLearn: {
-        type: String,
-        trim: true
+        type: String
     },
     courseContent: [
         {
@@ -35,8 +32,7 @@ const courseSchema = mongoose.Schema({
         required: true
     },
     thumbnail: {
-        type: String,
-        trim: true
+        type: String
     },
     tag: {
         type: [String],

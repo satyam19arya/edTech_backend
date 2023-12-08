@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const categorySchema = mongoose.Schema({
     name: {
         type: String,
-        trim: true
+        trim: true,
+        required: true
     },
-    desciption: {
-        type: String,
-        trim: true
+    description: {
+        type: String
     },
     courses: [
         {

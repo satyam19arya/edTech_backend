@@ -51,7 +51,60 @@ const getAllCategories = async (req, res) => {
     }
 }
 
+const categoryPageDetails = async (req, res) => {
+    try{
+        const {categoryId} = req.body;
+        const selectedCategory = await Category.findById(categoryId)
+                                                        .populate({
+                                                            path: 'courses',
+                                                            match: {status: 'Published'},
+                                                            populate: "ratingAndReviews"
+                                                        })
+                                                        .exec();
+
+        if(!selectedCategory){
+            return res.status(400).json({
+                success: false,
+                message: "Category not found"
+            });
+        }
+
+        if(selectedCategory.courses.length === 0){
+            return res.status(400).json({
+                success: false,
+                message: "No courses found in this category"
+            });
+        }
+
+        const differentCategories = await Category.find({_id: {$ne: categoryId}})
+                                    .populate({
+                                        path: 'courses',
+                                        match: {status: 'Published'}                                    
+                                    })
+                                    .exec();
+
+        // Get top-selling courses across all categories
+        
+
+        res.status(200).json({
+            success: true,
+            message: "Category details fetched successfully",
+            selectedCategory,
+            differentCategories
+        });
+
+    } catch(error){
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message
+        });
+    }
+}
+
 module.exports = {
     createCategory,
-    getAllCategories
+    getAllCategories,
+    categoryPageDetails
 }

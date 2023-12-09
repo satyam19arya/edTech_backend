@@ -12,7 +12,7 @@ const updateProfile = async (req, res) => {
             gender,
         } = req.body;
 
-        const id = req.user.id;
+        const id = req.user._id;
 
         if(!contactNumber || !gender || dateOfBirth || !id){
             return res.status(400).json({
@@ -55,7 +55,7 @@ const updateProfile = async (req, res) => {
 
 const deleteProfile = async (req, res) => {
     try{
-        const id = req.user.id;
+        const id = req.user._id;
         const userDetails = await User.findById(id);
 
         if(!userDetails){
@@ -87,7 +87,7 @@ const deleteProfile = async (req, res) => {
 
 const getAllUserDetails = async (req, res) => {
     try{
-        const id = req.user.id;
+        const id = req.user._id;
         const userDetails = await User.findById(id).populate('additionalDetails').exec();
 
         if(!userDetails){
@@ -113,7 +113,17 @@ const getAllUserDetails = async (req, res) => {
     }
 }
 
+const updateDisplayPicture = async (req, res) => {}
+
+const getEnrolledCourses = async (req, res) => {}
+
+const instructorDashboard = async (req, res) => {}
+
 module.exports = {
     updateProfile,
-    deleteProfile
+    deleteProfile,
+    getAllUserDetails,
+    updateDisplayPicture,
+    getEnrolledCourses,
+    instructorDashboard
 }

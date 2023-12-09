@@ -10,7 +10,9 @@ const createCourse = async (req, res) => {
             courseDescription,
             whatYouWillLearn,
             price,
+            tag,
             category,
+            status,
             instructions
         } = req.body;
 
@@ -23,20 +25,26 @@ const createCourse = async (req, res) => {
             });
         }
 
-        if(!courseName || !courseDescription || !whatYouWillLearn || !price || !category || !instructions){
+        if(!courseName || !courseDescription || !whatYouWillLearn || !price || !tag || !category || !instructions){
             return res.status(400).json({
                 success: false,
                 message: "All fields are required"
             });
         }
 
+        if(!status ||status === undefined){
+            status = "Draft";
+        }
+
         const userId = req.user._id;
-        const instructorDetails = await User.findById(userId);
+        const instructorDetails = await User.findById(userId, {
+            accountType: "Instructor"
+        });
 
         if(!instructorDetails){
             return res.status(400).json({
                 success: false,
-                message: "Instructor not found"
+                message: "Instructor Details not found"
             });
         }
 
@@ -69,10 +77,12 @@ const createCourse = async (req, res) => {
             courseDescription,
             whatYouWillLearn,
             price,
+            tag,
             thumbnail: uploadedResponse.secure_url,
             category: categoryDetails._id,
             instructions,
-            instructor: instructorDetails._id
+            instructor: instructorDetails._id,
+            status: status
         });
 
         const savedCourse = await newCourse.save();
@@ -172,7 +182,19 @@ const editCourse = async (req, res) => {
 
 const getAllCourses = async (req, res) => {
     try{
-        const courses = await Course.find({});
+        const courses = await Course.find(
+            { status: "Published" },
+            {
+                courseName: 1,
+                price: 1,
+                thumbnail: 1,
+                instructor: 1,
+                ratingAndReviews: 1,
+                studentsEnrolled: 1
+            }
+        )
+        .populate("instructor")
+        .exec();
 
         if(!courses){
             return res.status(400).json({
@@ -197,8 +219,70 @@ const getAllCourses = async (req, res) => {
     }
 }
 
+const getCourseDetails = async (req, res) => {
+    try{
+        const { courseId } = req.body;
+        const courseDetails = await Course.findById({
+            _id: courseId
+        })
+        .populate({
+            path: "instructor",
+            populate: {
+                path: "additionalDetails"
+            }
+        })
+        .populate("category")
+        .populate("ratingAndReviews")
+        .populate({
+            path: "courseContent",
+            populate: {
+                path: "subSection"
+            }
+        })
+        .exec();
+
+        if(!courseDetails){
+            return res.status(400).json({
+                success: false,
+                message: "Course not found"
+            });
+        }
+
+        if(courseDetails.status !== "Published"){
+            return res.status(400).json({
+                success: false,
+                message: "Course not published"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Course details fetched successfully",
+            data: courseDetails
+        });
+
+    } catch(error){
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            error: error.message
+      });
+    }
+}
+
+const getFullCourseDetails = async (req, res) => {}
+
+const getInstructorCourses = async (req, res) => {}
+
+const deleteCourse = async (req, res) => {}
+
 module.exports = {
     createCourse,
     editCourse,
-    getAllCourses
+    getAllCourses,
+    getCourseDetails,
+    getFullCourseDetails,
+    getInstructorCourses,
+    deleteCourse
 }

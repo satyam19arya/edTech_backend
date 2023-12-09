@@ -6,7 +6,14 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const cloudinary = require('cloudinary').v2;
 const fileupload = require('express-fileupload');
-dotenv.config('./.env');
+
+const userRoutes = require('./routes/User');
+const profileRoutes = require('./routes/Profile');
+const courseRoutes = require('./routes/Course');
+const paymentRoutes = require('./routes/Payments');
+const contactRoute = require('./routes/Contact');
+
+dotenv.config();
 const app = express();
 
 cloudinary.config({ 
@@ -37,6 +44,12 @@ dbConnect();
 app.get('/', (req, res) => {
     res.send('Hello from server 😎');
 });
+
+app.use("/api/auth", userRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/course", courseRoutes);
+app.use("/api/payment", paymentRoutes);
+app.use("/api/contact", contactRoute);
 
 app.listen(PORT, () => {
     console.log(`listening on port: ${PORT}`);

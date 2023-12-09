@@ -2,6 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const mailSender = require('../utils/mailSender');
+const passwordUpdated = require('../utils/templates/passwordUpdate');
 
 const resetPasswordToken = async (req, res) => {
     try{
@@ -33,11 +34,11 @@ const resetPasswordToken = async (req, res) => {
         const url = `http://localhost:3000/update-password/${token}`;
         const message = `Click on the link below to reset your password:\n\n${url}`;
 
-        await mailSender({
-            email: user.email,
-            subject: 'Reset Password',
+        await mailSender(
+            user.email,
+            'Reset Password',
             message
-        });
+        );
 
         res.status(200).json({
             success: true,
@@ -68,7 +69,7 @@ const resetPassword = async (req, res) => {
         if(password !== confirmPassword){
             return res.status(400).json({
                 success: false,
-                message: 'Passwords do not match'
+                message: 'Passwords and confirm passwords do not match'
             })
         }
 
@@ -92,6 +93,12 @@ const resetPassword = async (req, res) => {
             { resetPasswordToken },
             { password: hashedPassword, resetPasswordToken: null, resetPasswordExpire: null }, 
             { new: true }
+        );
+
+        const emailResponse = await mailSender(
+            user.email,
+            'Password updated successfully',
+            passwordUpdated(user.email, `${user.firstName} ${user.lastName}`)
         );
 
         res.status(200).json({

@@ -1,4 +1,4 @@
-exports.courseEnrollmentEmail = (courseName, name) => {
+const courseEnrollmentEmail = (courseName, name) => {
     return `<!DOCTYPE html>
     <html>
     <head>
@@ -79,3 +79,5 @@ exports.courseEnrollmentEmail = (courseName, name) => {
     </body>
     </html>`;
 };
+
+module.exports = courseEnrollmentEmail;

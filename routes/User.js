@@ -20,7 +20,7 @@ router.post('/login', logIn);
 router.post('/signup', signUp);
 router.post('/sendotp', sendOtp);
 router.post('/changepassword', auth, changePassword);
-router.post('/refresh', refreshAccessToken);
+router.get('/refresh', refreshAccessToken);
 router.post('/logout', logout);
 
 router.post('/resetpasswordtoken', resetPasswordToken);

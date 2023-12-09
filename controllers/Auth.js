@@ -1,12 +1,21 @@
 const User = require('../models/User');
 const OTP = require('../models/Otp');
+const Profile = require('../models/Profile');
 const otpGenerator = require('otp-generator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const mailSender = require('../utils/mailSender');
+const passwordUpdated = require('../utils/templates/passwordUpdate');
 
 const sendOtp = async (req, res) => {
     try{
         const {email} = req.body;
+        if(!email){
+            return res.status(400).json({
+                success: false,
+                message: "Email is required"
+            });
+        }
         const user = await User.findOne({email});
         if(user){
             return res.status(401).json({
@@ -102,7 +111,7 @@ const signUp = async (req, res) => {
             });
         }
 
-        if(response[0].otp !== otp){
+        if(otp !== response.otp){
             return res.status(401).json({
                 success: false,
                 message: "Invalid OTP"
@@ -111,7 +120,7 @@ const signUp = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const additonalDetails = await Profile.create({
+        const additionalDetails = await Profile.create({
             gender: null,
             dateOfBirth: null,
             about: null,
@@ -122,10 +131,10 @@ const signUp = async (req, res) => {
             firstName,
             lastName,
             email,
+            contactNumber,
             password: hashedPassword,
             accountType,
-            contactNumber,
-            additonalDetails: additonalDetails._id,
+            additionalDetails: additionalDetails._id,
             image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName}+${lastName}&background=%23fff&radius=50`
         });
 
@@ -141,7 +150,7 @@ const signUp = async (req, res) => {
         console.log(err);
         res.status(500).json({
             success: false,
-            message: "User can't be created",
+            message: "Internal server error",
             error: err.message
         });
     }
@@ -293,7 +302,16 @@ const changePassword = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        await User.findByIdAndUpdate(req.user._id, {password: hashedPassword}, {new: true});
+        const updatedPassword = await User.findByIdAndUpdate(
+                                           req.user._id,
+                                           {password: hashedPassword}, 
+                                           {new: true});
+
+        const emailResponse = await mailSender(
+            userDetails.email,
+            "Password updated successfully",
+            passwordUpdated(userDetails.email, `${userDetails.firstName} ${userDetails.lastName}`)
+        )
 
         res.status(200).json({
             success: true,
@@ -304,7 +322,7 @@ const changePassword = async (req, res) => {
         console.log(err);
         res.status(500).json({
             success: false,
-            message: "Error occurred while updating password",
+            message: "Internal server error",
             error: err.message
         });
     }

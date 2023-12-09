@@ -1,4 +1,4 @@
-exports.contactUsEmail = (
+const contactUsEmail = (
     firstname,
     lastname,
     email,
@@ -90,3 +90,5 @@ exports.contactUsEmail = (
     </body>
     </html>`
 }
+
+module.exports = contactUsEmail;

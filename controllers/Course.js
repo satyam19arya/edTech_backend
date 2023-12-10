@@ -13,27 +13,15 @@ const createCourse = async (req, res) => {
             tag,
             category,
             status,
-            instructions
         } = req.body;
 
-        const thumbnail = req.files.thumbnailImage;
+        const file = req.files.video;
 
-        if(!thumbnail){
-            return res.status(400).json({
-                success: false,
-                message: "Thumbnail is required"
-            });
-        }
-
-        if(!courseName || !courseDescription || !whatYouWillLearn || !price || !tag || !category || !instructions){
+        if(!courseName || !courseDescription || !whatYouWillLearn || !price || !tag || !category){
             return res.status(400).json({
                 success: false,
                 message: "All fields are required"
             });
-        }
-
-        if(!status ||status === undefined){
-            status = "Draft";
         }
 
         const userId = req.user._id;
@@ -48,7 +36,7 @@ const createCourse = async (req, res) => {
             });
         }
 
-        if(instructorDetails.role !== 'Instructor'){
+        if(instructorDetails.accountType !== 'Instructor'){
             return res.status(400).json({
                 success: false,
                 message: "You are not authorized to create a course"
@@ -65,11 +53,26 @@ const createCourse = async (req, res) => {
             });
         }
 
+        const supportedTypes = ["mp4", "mov", "wmv", "flv", "avi", "webm"];
+        const fileType = file.name.split('.')[1].toLowerCase();
+        if(!supportedTypes.includes(fileType)) {
+            return res.status(400).json({
+                success: false,
+                message: 'File type not supported'
+            });
+        }
+
+        if(file.size > 1024 * 1024 * 20) {
+            return res.status(400).json({
+                success: false,
+                message: 'File size too large'
+            });
+        }
+
         // Upload thumbnail to cloudinary
-        const uploadedResponse = await cloudinary.uploader.upload(thumbnail.tempFilePath, {
+        const uploadedResponse = await cloudinary.uploader.upload(file.tempFilePath, {
             folder: 'FileUpload',
-            width: 500,
-            crop: 'scale'
+            resource_type: "video"
         });
 
         const newCourse = new Course({
@@ -80,7 +83,6 @@ const createCourse = async (req, res) => {
             tag,
             thumbnail: uploadedResponse.secure_url,
             category: categoryDetails._id,
-            instructions,
             instructor: instructorDetails._id,
             status: status
         });
@@ -123,7 +125,7 @@ const createCourse = async (req, res) => {
 
 const editCourse = async (req, res) => {
     try{
-        const { courseId } = req.body;
+        const {courseId} = req.body;
         const existingCourse = await Course.findById(courseId);
 
         if(!existingCourse){
@@ -139,10 +141,10 @@ const editCourse = async (req, res) => {
             whatYouWillLearn,
             price,
             category,
-            instructions
+            tag
         } = req.body;
 
-        const thumbnail = req.files.thumbnailImage;
+        const file = req.files.video;
 
         // Update course details
         if(courseName) existingCourse.courseName = courseName;
@@ -150,15 +152,29 @@ const editCourse = async (req, res) => {
         if(whatYouWillLearn) existingCourse.whatYouWillLearn = whatYouWillLearn;
         if(price) existingCourse.price = price;
         if(category) existingCourse.category = category;
-        if(instructions) existingCourse.instructions = instructions;
-        
-        if(thumbnail){
-            const uploadedResponse = await cloudinary.uploader.upload(thumbnail.tempFilePath, {
-                folder: 'FileUpload',
-                width: 500,
-                crop: 'scale'
-            });
+        if(tag) existingCourse.tag = tag;
 
+        const supportedTypes = ["mp4", "mov", "wmv", "flv", "avi", "webm"];
+        const fileType = file.name.split('.')[1].toLowerCase();
+        if(!supportedTypes.includes(fileType)) {
+            return res.status(400).json({
+                success: false,
+                message: 'File type not supported'
+            });
+        }
+
+        if(file.size > 1024 * 1024 * 20) {
+            return res.status(400).json({
+                success: false,
+                message: 'File size too large'
+            });
+        }
+        
+        if(file){
+            const uploadedResponse = await cloudinary.uploader.upload(file.tempFilePath, {
+                folder: 'FileUpload',
+                resource_type: "video"
+            });
             existingCourse.thumbnail = uploadedResponse.secure_url;
         }
 
@@ -232,11 +248,11 @@ const getCourseDetails = async (req, res) => {
             }
         })
         .populate("category")
-        .populate("ratingAndReviews")
+        // .populate("ratingAndReviews")
         .populate({
             path: "courseContent",
             populate: {
-                path: "subSection"
+                path: "subSections"
             }
         })
         .exec();
@@ -248,12 +264,12 @@ const getCourseDetails = async (req, res) => {
             });
         }
 
-        if(courseDetails.status !== "Published"){
-            return res.status(400).json({
-                success: false,
-                message: "Course not published"
-            });
-        }
+        // if(courseDetails.status !== "Published"){
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: "Course not published"
+        //     });
+        // }
 
         return res.status(200).json({
             success: true,

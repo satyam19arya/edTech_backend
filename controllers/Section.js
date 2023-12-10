@@ -12,7 +12,7 @@ const createSection = async (req, res) => {
             })
         }
 
-        if(!sectionName || courseId) {
+        if(!sectionName || !courseId) {
             return res.status(400).json({
                 success: false,
                 message: 'Please provide all the required fields'

@@ -72,6 +72,11 @@ const deleteProfile = async (req, res) => {
         await User.findByIdAndDelete(id);
         await Profile.findByIdAndDelete(profile._id);
 
+        res.clearCookie('jwt', {
+            httpOnly: true,
+            secure: true,
+        });
+
         res.status(200).json({
             success: true,
             message: 'Profile deleted successfully'

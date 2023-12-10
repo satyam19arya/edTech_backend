@@ -1,4 +1,4 @@
-const {contactUsEmail} = require('../utils/templates/contactFormTemplate');
+const contactUsEmail = require('../utils/templates/contactFormTemplate');
 const mailSender = require('../utils/mailSender');
 
 const contactUs = async (req, res) => {
@@ -19,11 +19,11 @@ const contactUs = async (req, res) => {
             });
         }
 
-        await mailSender(email ,"Your Data send successfully" ,contactUsEmail(firstName, lastName, email, phoneNo, countrycode, message));
+        await mailSender(email ,"Your data received successfully" ,contactUsEmail(firstName, lastName, email, phoneNo, countrycode, message));
 
         res.status(200).json({
             success: true,
-            message: "Email send successfully"
+            message: "Email sent successfully"
         });
 
     } catch(error){

@@ -92,7 +92,7 @@ const deleteProfile = async (req, res) => {
     }
 }
 
-const getAllUserDetails = async (req, res) => {
+const getUserDetails = async (req, res) => {
     try{
         const id = req.user._id;
         const userDetails = await User.findById(id)
@@ -169,7 +169,7 @@ const instructorDashboard = async (req, res) => {}
 module.exports = {
     updateProfile,
     deleteProfile,
-    getAllUserDetails,
+    getUserDetails,
     updateDisplayPicture,
     getEnrolledCourses,
     instructorDashboard

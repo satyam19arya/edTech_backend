@@ -77,7 +77,6 @@ const signUp = async (req, res) => {
             password,
             confirmPassword,
             accountType,
-            contactNumber,
             otp
         } = req.body;
     
@@ -131,7 +130,6 @@ const signUp = async (req, res) => {
             firstName,
             lastName,
             email,
-            contactNumber,
             password: hashedPassword,
             accountType,
             additionalDetails: additionalDetails._id,

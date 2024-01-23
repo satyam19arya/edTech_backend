@@ -33,26 +33,6 @@ exports.auth = async (req, res, next) => {
     }
 }
 
-// exports.isStudent = async (req, res, next) => {
-//     try{
-//         if(req.user.accountType === 'Student'){
-//             next();
-//         } else{
-//             return res.status(403).json({
-//                 success: false,
-//                 message: 'You are not authorized to access this route'
-//             })
-//         }
-//     } catch(err){
-//         console.log(err);
-//         return res.status(500).json({
-//             success: false,
-//             message: 'Something went wrong',
-//             error: err.message
-//         })
-//     }
-// }
-
 exports.isStudent = async (req, res, next) => {
     try{
         const userDetails = await User.findById({email: req.user.email});

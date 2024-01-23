@@ -3,15 +3,13 @@ const router = express.Router();
 
 const { 
     auth,
-    isInstructor, 
-    isStudent, 
-    isAdmin
+    isInstructor
 } = require('../middlewares/auth');
 
 const {
     updateProfile,
     deleteProfile,
-    getAllUserDetails,
+    getUserDetails,
     updateDisplayPicture,
     getEnrolledCourses,
     instructorDashboard
@@ -19,7 +17,7 @@ const {
 
 router.put('/updateProfile', auth, updateProfile);
 router.delete('/deleteProfile', auth, deleteProfile);
-router.get('/getUserDetails', auth, getAllUserDetails);
+router.get('/getUserDetails', auth, getUserDetails);
 router.put('/updateDisplayPicture', auth, updateDisplayPicture);
 router.get('/getEnrolledCourses', auth, getEnrolledCourses);
 router.get('/instructorDashboard', auth, isInstructor, instructorDashboard);

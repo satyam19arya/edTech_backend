@@ -52,8 +52,8 @@ const passwordUpdated = (email, name) => {
     </head>   
     <body>
         <div class="container">
-            <a href="https://studynotion-edtech-project.vercel.app"><img class="logo"
-                    src="https://i.ibb.co/7Xyj3PC/logo.png" alt="StudyNotion Logo"></a>
+            <a href="https://satyam-arya.click"><img class="logo"
+                    src="https://codealone.s3.amazonaws.com/logo.png" alt="Logo"></a>
             <div class="message">Password Update Confirmation</div>
             <div class="body">
                 <p>Hey ${name},</p>
